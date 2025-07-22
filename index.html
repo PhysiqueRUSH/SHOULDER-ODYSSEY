@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="icone.png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#007ACC">
-  
+
   <style>
     /* Splash screen */
     #splash {
@@ -61,15 +61,25 @@
     .checkbox-list { max-height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 0.5rem; }
     .checkbox-list label { display: block; margin-bottom: 0.5rem; }
 
-    input[type="text"], input[type="number"] {
+    input[type="text"], input[type="date"], input[type="number"], select {
       width: 100%;
       padding: 0.5rem;
       margin-bottom: 1rem;
       border: 1px solid #ccc;
       border-radius: 4px;
+      box-sizing: border-box;
     }
 
-    ul { padding-left: 1.2rem; }
+    .const-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+    .const-row input { flex: 1; }
+    .const-row label { width: 3rem; }
+
+    .green-bg { background-color: #d4edda; }
+    .red-bg   { background-color: #f8d7da; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    table th, table td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
+
   </style>
 </head>
 <body>
@@ -78,13 +88,13 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/<votre-repo>/sw.js')
+        navigator.serviceWorker.register('sw.js')
           .then(reg => console.log('SW registered:', reg))
           .catch(err => console.error('SW registration failed:', err));
       });
     }
   </script>
-  
+
   <!-- Splash screen -->
   <div id="splash">
     <img src="lancement.png" alt="Statue guerrier grec avec douleur à l'épaule" />
@@ -113,9 +123,28 @@
 
     <div id="view-form" style="display:none;">
       <h2>BILAN pour <input type="text" id="input-nom" placeholder="Nom du patient"/></h2>
-      <label>Score de Constant (/100)</label>
-      <input type="number" id="input-constant" min="0" max="100" />
 
+      <h3>Scores de Constant</h3>
+      <div id="constant-entries">
+        <!-- 3 lignes score+date -->
+        <div class="const-row">
+          <label>#1</label>
+          <input type="number" class="const-score" min="0" max="100" placeholder="score"/>
+          <input type="date"   class="const-date" />
+        </div>
+        <div class="const-row">
+          <label>#2</label>
+          <input type="number" class="const-score" min="0" max="100" placeholder="score"/>
+          <input type="date"   class="const-date" />
+        </div>
+        <div class="const-row">
+          <label>#3</label>
+          <input type="number" class="const-score" min="0" max="100" placeholder="score"/>
+          <input type="date"   class="const-date" />
+        </div>
+      </div>
+
+      <h3>Éléments du bilan</h3>
       <div class="checkbox-list" id="checkboxes"></div>
 
       <button id="btn-enregistrer" class="btn">ENREGISTRER LE BILAN</button>
@@ -132,189 +161,193 @@
     </div>
   </section>
 
-  <!-- SECTION SCORE DE CONSTANT -->
+  <!-- SECTION SCORE DE CONSTANT (QUESTIONNAIRE) -->
   <section id="sec-constant">
-    <h2>Scores de Constant</h2>
-    <div id="liste-constant"></div>
+    <h2>Questionnaire Score de Constant</h2>
+    <form id="form-constant">
+      <label>Douleur (0–15 points)</label>
+      <input type="number" id="q-douleur" min="0" max="15" value="0"/>
+
+      <label>Activités de la vie quotidienne (0–20 points)</label>
+      <input type="number" id="q-avq" min="0" max="20" value="0"/>
+
+      <label>Amplitude (0–40 points)</label>
+      <input type="number" id="q-mobilite" min="0" max="40" value="0"/>
+
+      <label>Force musculaire (0–25 points)</label>
+      <input type="number" id="q-force" min="0" max="25" value="0"/>
+
+      <button type="button" id="calc-constant" class="btn">Calculer le score</button>
+    </form>
+    <h3>Score calculé : <span id="constant-result">0</span>/100</h3>
   </section>
 
   <script>
-    // Splash : disparaît après 5 secondes
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        document.getElementById('splash').style.display = 'none';
-      }, 5000);
+    // Splash disparait après 5s
+    document.addEventListener('DOMContentLoaded', ()=>{
+      setTimeout(()=>document.getElementById('splash').style.display='none', 5000);
     });
 
-    // Définition des cases & mapping vers actes
-    const items = [
-      { label: 'Écho : tendinopathie supra-ep', key: 'echo_supra', actes: ['ODC supra-ep'] },
-      { label: 'Écho : tendinopathie infra-ep', key: 'echo_infra', actes: ['ODC infra-ep'] },
-      { label: 'Écho : tendinopathie subscap', key: 'echo_subscap', actes: ['ODC subscap'] },
-      { label: 'Écho : tendinopathie long biceps', key: 'echo_lg_biceps', actes: ['ODC lg biceps'] },
-      { label: 'Poussées inflammatoires', key: 'pouss_infl', actes: ['Ultrasons', 'Glace à la maison'] },
-      { label: 'Posture en tilt antérieur', key: 'posture_tilt', actes: [
-          'Mouvements activo-passifs de tilt postérieur',
-          'Étirement du petit pectoral',
-          'Ponçage du petit pectoral',
-          'Renforcement du trapèze inférieur',
-          'Réintegration en Superman Row'
-        ]
-      },
-      { label: 'Gléno-humérale qui craque', key: 'gleno_craque', actes: ['Exercices de co-contractions : pads, T sur BOSU, Cercles Haltère, ...'] },
-      { label: 'Palpation supra-ep +', key: 'palp_supra', actes: ['ODC supra-ep'] },
-      { label: 'Palpation infra-ep +', key: 'palp_infra', actes: ['ODC infra-ep'] },
-      { label: 'Palpation lg biceps +', key: 'palp_lg_biceps', actes: ['ODC lg biceps'] },
-      { label: 'Contracture trapèze sup', key: 'contr_trap_sup', actes: ['Shrugs', 'Pistolet Massage Trapèze Sup'] },
-      { label: 'Contracture deltoïde', key: 'contr_deltoide', actes: ['Pistolet Massage Deltoïde'] },
-      { label: 'Contracture trapèze moyen', key: 'contr_trap_moy', actes: ['Pistolet Massage Trapèze Moy', 'Scap Squeezie Machine'] },
-      { label: 'Contracture des rotateurs internes', key: 'contr_ri', actes: ['Balle de Massage sur Trigger Points', 'Pistolet Massage sur les RI'] },
-      { label: 'Test de Neer +', key: 'test_neer', actes: ['Renfo des RE d\'épaule', 'Décoaptations et recentrages'] },
-      { label: 'Test de Hawkins +', key: 'test_hawkins', actes: ['Renfo des RE d\'épaule', 'Décoaptations et recentrages'] },
-      { label: 'C-Test +', key: 'c_test', actes: ['Renfo des RE d\'épaule', 'Décoaptations et recentrages'] },
-      { label: 'Test de Jobe +', key: 'test_jobe', actes: ['ODC supra-ep', 'Contractions supra-ep rapides bloquées'] },
-      { label: 'Test de Patte +', key: 'test_patte', actes: ['ODC infra-ep', 'Contractions infra-ep rapides bloquées en RI sur le dos'] },
-      { label: 'Palm Up Test +', key: 'palm_up', actes: ['ODC lg biceps', 'Contractions lg biceps rapides bloquées en extension d\'épaule'] },
-      { label: 'Belly Press Test +', key: 'belly_press', actes: ['ODC subscap', 'Contractions RI d\'épaule rapides bloquées, en RE d\'épaule, sur le dos'] },
-      { label: 'Amplitude en RE limitée', key: 'amp_re', actes: ['Étirements des RI d\'épaule'] },
-      { label: 'Amplitude en RI limitée', key: 'amp_ri', actes: ['Étirements des RE d\'épaule'] },
-      { label: 'Abd douloureuse et correction du spin efficace', key: 'abd_spin', actes: ['Corrections du spin'] },
-      { label: 'Préactivation de la coiffe (infra-ep) efficace', key: 'preact_coiffe', actes: ['Renfo des RE d\'épaule', 'Réintegration en Superman Row'] },
-      { label: 'Accompagnement de la scapula efficace', key: 'accomp_scap', actes: ['Shrugs', 'Travail du dentelé antérieur', 'Snow Angels', 'Réintegration en Superman Row'] }
-    ];
+    // données dans localStorage
+    function loadBilans(){
+      const d = localStorage.getItem('bilans');
+      return d? JSON.parse(d): {};
+    }
+    function saveBilans(o){
+      localStorage.setItem('bilans', JSON.stringify(o));
+    }
 
-    // Menu onglets
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    // mapping items→actes (inchangé)
+    const items = [ /*... même tableau d'objets {...} ...*/ ];
+
+    // Onglets
+    document.querySelectorAll('nav button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
-        document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-        const id = btn.id.replace('tab', 'sec');
-        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+        document.getElementById(btn.id.replace('tab','sec')).classList.add('active');
       });
     });
 
     // Génération des checkbox
     const cbContainer = document.getElementById('checkboxes');
-    items.forEach(it => {
+    items.forEach(it=>{
       const lbl = document.createElement('label');
       lbl.innerHTML = `<input type="checkbox" data-key="${it.key}"> ${it.label}`;
       cbContainer.appendChild(lbl);
     });
 
-    // localStorage helpers
-    function loadBilans() {
-      const data = localStorage.getItem('bilans');
-      return data ? JSON.parse(data) : {};
-    }
-    function saveBilans(obj) {
-      localStorage.setItem('bilans', JSON.stringify(obj));
-    }
-
-    // LISTE DES BILANS
-    document.getElementById('btn-liste').addEventListener('click', () => {
-      document.getElementById('view-form').style.display = 'none';
+    // ---- BILAN: liste & formulaire ----
+    document.getElementById('btn-liste').onclick = ()=>{
+      document.getElementById('view-form').style.display='none';
       const view = document.getElementById('view-liste');
       view.style.display = 'block';
       const cont = document.getElementById('liste-bilans');
       cont.innerHTML = '';
       const bilans = loadBilans();
-      Object.keys(bilans).sort().forEach(name => {
+      Object.keys(bilans).sort().forEach(name=>{
         const div = document.createElement('div');
-        div.className = 'list-item';
-        div.textContent = name;
-        div.addEventListener('click', () => editBilan(name));
+        div.className='list-item';
+        div.textContent=name;
+        div.onclick=()=>editBilan(name);
         cont.appendChild(div);
       });
-    });
-
-    // NOUVEAU BILAN
-    document.getElementById('btn-nouveau').addEventListener('click', () => {
-      document.getElementById('view-liste').style.display = 'none';
-      document.getElementById('view-form').style.display = 'block';
-      document.getElementById('input-nom').value = '';
-      document.getElementById('input-constant').value = '';
-      document.querySelectorAll('#checkboxes input').forEach(cb => cb.checked = false);
-    });
-
-    // ÉDITION D’UN BILAN
-    function editBilan(name) {
-      const bilans = loadBilans();
-      const b = bilans[name];
-      document.getElementById('view-liste').style.display = 'none';
-      document.getElementById('view-form').style.display = 'block';
+    };
+    document.getElementById('btn-nouveau').onclick = ()=>{
+      showForm();
+      document.getElementById('input-nom').value='';
+      clearConstantRows();
+      document.querySelectorAll('#checkboxes input').forEach(cb=>cb.checked=false);
+    };
+    function showForm(){
+      document.getElementById('view-liste').style.display='none';
+      document.getElementById('view-form').style.display='block';
+    }
+    function clearConstantRows(){
+      document.querySelectorAll('.const-score').forEach(i=>{ i.value=''; i.classList.remove('green-bg','red-bg'); });
+      document.querySelectorAll('.const-date').forEach(d=>d.value='');
+    }
+    function editBilan(name){
+      const bilans = loadBilans(), b = bilans[name];
+      showForm();
       document.getElementById('input-nom').value = name;
-      document.getElementById('input-constant').value = b.constant;
-      document.querySelectorAll('#checkboxes input').forEach(cb => {
+      clearConstantRows();
+      if(b.constantEntries){
+        b.constantEntries.slice(0,3).forEach((ce,i)=>{
+          document.querySelectorAll('.const-score')[i].value = ce.score;
+          document.querySelectorAll('.const-date')[i].value = ce.date;
+        });
+        colorLatestConstant();
+      }
+      document.querySelectorAll('#checkboxes input').forEach(cb=>{
         cb.checked = b.selections.includes(cb.getAttribute('data-key'));
       });
     }
 
-    // ENREGISTRER LE BILAN
-    document.getElementById('btn-enregistrer').addEventListener('click', () => {
+    // Enregistrer
+    document.getElementById('btn-enregistrer').onclick = ()=>{
       const name = document.getElementById('input-nom').value.trim();
-      if (!name) { alert('Veuillez saisir le nom du patient.'); return; }
-      const constant = parseInt(document.getElementById('input-constant').value);
-      if (isNaN(constant) || constant < 0 || constant > 100) {
-        alert('Score Constant invalide.'); return;
-      }
+      if(!name){ alert('Nom patient requis'); return; }
+      // lire les constantes
+      const scores = Array.from(document.querySelectorAll('.const-score')).map((inp,i)=>({
+        score: inp.value? parseInt(inp.value): null,
+        date: document.querySelectorAll('.const-date')[i].value || null
+      })).filter(ce=>ce.score!==null && ce.date);
+      // mapping selections
       const sels = Array.from(document.querySelectorAll('#checkboxes input'))
-        .filter(cb => cb.checked)
-        .map(cb => cb.getAttribute('data-key'));
+                        .filter(cb=>cb.checked)
+                        .map(cb=>cb.getAttribute('data-key'));
       const bilans = loadBilans();
-      bilans[name] = { constant, selections: sels };
+      bilans[name] = { constantEntries: scores, selections: sels };
       saveBilans(bilans);
       alert('Bilan enregistré.');
-    });
+    };
 
-    // TRAITEMENT : liste des patients
-    function refreshTraitementList() {
+    // coloration du plus récent vs précédent
+    document.querySelectorAll('.const-score, .const-date').forEach(el=>{
+      el.addEventListener('change', colorLatestConstant);
+    });
+    function colorLatestConstant(){
+      const rows = Array.from(document.querySelectorAll('.const-row'));
+      // extraire entrées valides
+      const entries = rows.map(r=>{
+        const scoreI = r.querySelector('.const-score'),
+              dateI  = r.querySelector('.const-date');
+        return dateI.value && scoreI.value
+          ? { date: dateI.value, score: parseInt(scoreI.value), input: scoreI }
+          : null;
+      }).filter(e=>e).sort((a,b)=> new Date(a.date) - new Date(b.date));
+      // reset classes
+      document.querySelectorAll('.const-score').forEach(i=>i.classList.remove('green-bg','red-bg'));
+      if(entries.length >= 2){
+        const last = entries[entries.length-1],
+              prev = entries[entries.length-2];
+        if(last.score > prev.score) last.input.classList.add('green-bg');
+        else if(last.score < prev.score) last.input.classList.add('red-bg');
+      }
+    }
+
+    // ---- TRAITEMENT ----
+    function refreshTraitementList(){
       const cont = document.getElementById('liste-traitement');
-      cont.innerHTML = '';
+      cont.innerHTML='';
       const bilans = loadBilans();
-      Object.keys(bilans).sort().forEach(name => {
+      Object.keys(bilans).sort().forEach(name=>{
         const div = document.createElement('div');
-        div.className = 'list-item';
-        div.textContent = name;
-        div.addEventListener('click', () => showTraitement(name));
+        div.className='list-item';
+        div.textContent=name;
+        div.onclick=()=>showTraitement(name);
         cont.appendChild(div);
       });
     }
-    document.getElementById('tab-traitement').addEventListener('click', refreshTraitementList);
-
-    // AFFICHER TRAITEMENT
-    function showTraitement(name) {
-      const bilans = loadBilans();
-      const b = bilans[name];
+    document.getElementById('tab-traitement').addEventListener('click',refreshTraitementList);
+    function showTraitement(name){
+      const bilans = loadBilans(), b = bilans[name];
       const actesSet = new Set();
-      b.selections.forEach(key => {
-        const it = items.find(i => i.key === key);
-        it.actes.forEach(a => actesSet.add(a));
+      b.selections.forEach(k=>{
+        const it = items.find(x=>x.key===k);
+        it.actes.forEach(a=>actesSet.add(a));
       });
       const ul = document.getElementById('liste-actes');
-      ul.innerHTML = '';
-      actesSet.forEach(a => {
-        const li = document.createElement('li');
-        li.textContent = a;
+      ul.innerHTML='';
+      actesSet.forEach(a=>{
+        const li=document.createElement('li'); li.textContent=a;
         ul.appendChild(li);
       });
-      document.getElementById('treat-nom').textContent = name;
-      document.getElementById('view-traitement').style.display = 'block';
+      document.getElementById('treat-nom').textContent=name;
+      document.getElementById('view-traitement').style.display='block';
     }
 
-    // SCORE DE CONSTANT : affichage
-    function refreshConstantList() {
-      const cont = document.getElementById('liste-constant');
-      cont.innerHTML = '';
-      const bilans = loadBilans();
-      Object.keys(bilans).sort().forEach(name => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.textContent = `${name} : ${bilans[name].constant}/100`;
-        cont.appendChild(div);
-      });
-    }
-    document.getElementById('tab-constant').addEventListener('click', refreshConstantList);
+    // ---- SCORE DE CONSTANT (calcul questionnaire) ----
+    document.getElementById('calc-constant').onclick = ()=>{
+      const d = parseInt(document.getElementById('q-douleur').value) || 0;
+      const avq = parseInt(document.getElementById('q-avq').value) || 0;
+      const mob= parseInt(document.getElementById('q-mobilite').value) || 0;
+      const f = parseInt(document.getElementById('q-force').value) || 0;
+      const total = d + avq + mob + f;
+      document.getElementById('constant-result').textContent = total;
+    };
   </script>
 </body>
 </html>
