@@ -74,6 +74,17 @@
 </head>
 <body>
 
+  <!-- Enregistrement du service‑worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/<votre-repo>/sw.js')
+          .then(reg => console.log('SW registered:', reg))
+          .catch(err => console.error('SW registration failed:', err));
+      });
+    }
+  </script>
+  
   <!-- Splash screen -->
   <div id="splash">
     <img src="lancement.png" alt="Statue guerrier grec avec douleur à l'épaule" />
