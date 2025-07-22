@@ -53,7 +53,15 @@
     }
     .list-item {
       padding:0.5rem 0; border-bottom:1px solid #ccc;
-      cursor:pointer;
+      cursor:pointer; display:flex; align-items:center;
+    }
+
+    .del-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      font-size: 1rem;
     }
 
     .const-row {
@@ -128,9 +136,21 @@
       <h2>BILAN pour <input type="text" id="input-nom" placeholder="Nom du patient"/></h2>
 
       <div id="constant-entries">
-        <div class="const-row"><label>#1</label><input type="number" class="const-score" min="0" max="100"/><input type="date" class="const-date"/></div>
-        <div class="const-row"><label>#2</label><input type="number" class="const-score" min="0" max="100"/><input type="date" class="const-date"/></div>
-        <div class="const-row"><label>#3</label><input type="number" class="const-score" min="0" max="100"/><input type="date" class="const-date"/></div>
+        <div class="const-row">
+          <label>#1</label>
+          <input type="number" class="const-score" min="0" max="100"/>
+          <input type="date" class="const-date"/>
+        </div>
+        <div class="const-row">
+          <label>#2</label>
+          <input type="number" class="const-score" min="0" max="100"/>
+          <input type="date" class="const-date"/>
+        </div>
+        <div class="const-row">
+          <label>#3</label>
+          <input type="number" class="const-score" min="0" max="100"/>
+          <input type="date" class="const-date"/>
+        </div>
       </div>
 
       <div id="checkboxes" class="checkbox-list"></div>
@@ -195,12 +215,16 @@
 
       <fieldset>
         <legend>3. Mobilité active sans douleur (0–40 pts)</legend>
-        <p>À mesurer par le soignant : 2 pts tous les 30° d’élévation, abduction et rotations.</p>
+        <label for="q-mobilite">Score mobilité :</label>
+        <input type="number" id="q-mobilite" min="0" max="40" value="0"/>
+        <p>À mesurer par le soignant : 2 pts tous les 30° d’élévation, abduction et rotations.</p>
       </fieldset>
 
       <fieldset>
         <legend>4. Force musculaire (0–25 pts)</legend>
-        <p>À mesurer par le soignant : poids en kg × 2.</p>
+        <label for="q-force">Score force :</label>
+        <input type="number" id="q-force" min="0" max="25" value="0"/>
+        <p>À mesurer par le soignant : poids en kg × 2 (max 25 pts).</p>
       </fieldset>
 
       <button type="button" id="calc-constant" class="btn">Calculer le score</button>
@@ -288,11 +312,30 @@
       const bilans=loadBilans();
       Object.keys(bilans).sort().forEach(name=>{
         const d=document.createElement('div');
-        d.className='list-item'; d.textContent=name;
+        d.className='list-item';
+        // Bouton de suppression
+        const btnDel=document.createElement('button');
+        btnDel.className='del-btn';
+        btnDel.textContent='🗑️';
+        btnDel.onclick=(e)=>{
+          e.stopPropagation();
+          if(confirm(`Supprimer le bilan de ${name} ?`)){
+            const bils=loadBilans();
+            delete bils[name];
+            saveBilans(bils);
+            d.remove();
+          }
+        };
+        d.appendChild(btnDel);
+        // Nom du patient
+        const span=document.createElement('span');
+        span.textContent=name;
+        d.appendChild(span);
         d.onclick=()=>editBilan(name);
         cont.appendChild(d);
       });
     };
+
     // Bilan nouveau
     document.getElementById('btn-nouveau').onclick=()=>{
       document.getElementById('view-liste').style.display='none';
@@ -302,6 +345,7 @@
       document.querySelectorAll('.const-date').forEach(d=>d.value='');
       document.querySelectorAll('#checkboxes input').forEach(cb=>cb.checked=false);
     };
+
     // edit
     function editBilan(name){
       const bilans=loadBilans(), b=bilans[name];
@@ -320,6 +364,7 @@
         cb.checked=b.selections.includes(cb.getAttribute('data-key'));
       });
     }
+
     // save
     document.getElementById('btn-enregistrer').onclick=()=>{
       const name=document.getElementById('input-nom').value.trim();
@@ -344,12 +389,34 @@
       const bilans=loadBilans();
       Object.keys(bilans).sort().forEach(name=>{
         const d=document.createElement('div');
-        d.className='list-item'; d.textContent=name;
+        d.className='list-item';
+        // Bouton de suppression
+        const btnDel=document.createElement('button');
+        btnDel.className='del-btn';
+        btnDel.textContent='🗑️';
+        btnDel.onclick=(e)=>{
+          e.stopPropagation();
+          if(confirm(`Supprimer le bilan de ${name} ?`)){
+            const bils=loadBilans();
+            delete bils[name];
+            saveBilans(bils);
+            d.remove();
+            if(document.getElementById('treat-nom').textContent===name){
+              document.getElementById('view-traitement').style.display='none';
+            }
+          }
+        };
+        d.appendChild(btnDel);
+        // Nom du patient
+        const span=document.createElement('span');
+        span.textContent=name;
+        d.appendChild(span);
         d.onclick=()=>showTraitement(name);
         cont.appendChild(d);
       });
     }
     document.getElementById('tab-traitement').onclick=refreshTraitementList;
+
     function showTraitement(name){
       const bilans=loadBilans(), b=bilans[name];
       const actes=new Set();
@@ -368,14 +435,16 @@
     }
 
     // questionnaire calc
-    document.getElementById('calc-constant').onclick=()=>{
-      const pain=+document.getElementById('q-pain').value||0;
-      const sleep=+document.getElementById('q-sleep').value||0;
-      const work=+document.getElementById('q-work').value||0;
-      const sport=+document.getElementById('q-sport').value||0;
-      const pos=+document.getElementById('q-position').value||0;
-      const total=pain+sleep+work+sport+pos;
-      document.getElementById('constant-result').textContent=total;
+    document.getElementById('calc-constant').onclick = () => {
+      const pain     = +document.getElementById('q-pain').value    || 0;
+      const sleep    = +document.getElementById('q-sleep').value   || 0;
+      const work     = +document.getElementById('q-work').value    || 0;
+      const sport    = +document.getElementById('q-sport').value   || 0;
+      const pos      = +document.getElementById('q-position').value|| 0;
+      const mobilite = +document.getElementById('q-mobilite').value|| 0;
+      const force    = +document.getElementById('q-force').value   || 0;
+      const total = pain + sleep + work + sport + pos + mobilite + force;
+      document.getElementById('constant-result').textContent = total;
     };
   </script>
 </body>
