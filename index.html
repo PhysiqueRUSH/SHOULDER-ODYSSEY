@@ -17,19 +17,14 @@
   <style>
     /* Splash screen */
     #splash {
-      position: fixed;
-      top: 0; left: 0;
+      position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
       background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       z-index: 9999;
     }
     #splash img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+      max-width: 100%; max-height: 100%; object-fit: contain;
     }
 
     /* Styles généraux */
@@ -43,43 +38,52 @@
     }
     nav { display: flex; background: #005A9E; }
     nav button {
-      flex: 1;
-      padding: 0.75rem;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1rem;
+      flex: 1; padding: 0.75rem;
+      background: none; border: none;
+      color: #fff; font-size: 1rem;
     }
     nav button.active { background: #004476; }
 
     section { display: none; padding: 1rem; }
     section.active { display: block; }
 
-    .list-item { padding: 0.5rem 0; border-bottom: 1px solid #ccc; cursor: pointer; }
-    .btn { display: block; margin: 1rem 0; padding: 0.75rem; background: #007ACC; color: #fff; text-align: center; border: none; border-radius: 4px; }
+    .list-item {
+      padding: 0.5rem 0; border-bottom: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .btn {
+      display: block; margin: 1rem 0;
+      padding: 0.75rem; background: #007ACC;
+      color: #fff; text-align: center;
+      border: none; border-radius: 4px;
+    }
 
-    .checkbox-list { max-height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 0.5rem; }
-    .checkbox-list label { display: block; margin-bottom: 0.5rem; }
+    .checkbox-list {
+      max-height: 300px; overflow-y: auto;
+      border: 1px solid #ccc; padding: 0.5rem;
+      margin-top: 1rem;
+    }
+    .checkbox-list label {
+      display: block; margin-bottom: 0.5rem;
+    }
 
-    input[type="text"], input[type="date"], input[type="number"], select {
-      width: 100%;
-      padding: 0.5rem;
+    input[type="text"], input[type="date"],
+    input[type="number"], select {
+      width: 100%; padding: 0.5rem;
       margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: 1px solid #ccc; border-radius: 4px;
       box-sizing: border-box;
     }
 
-    .const-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
-    .const-row input { flex: 1; }
+    .const-row {
+      display: flex; gap: 0.5rem;
+      align-items: center; margin-bottom: 0.75rem;
+    }
     .const-row label { width: 3rem; }
+    .const-row input { flex: 1; }
 
     .green-bg { background-color: #d4edda; }
     .red-bg   { background-color: #f8d7da; }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    table th, table td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
-
   </style>
 </head>
 <body>
@@ -126,7 +130,6 @@
 
       <h3>Scores de Constant</h3>
       <div id="constant-entries">
-        <!-- 3 lignes score+date -->
         <div class="const-row">
           <label>#1</label>
           <input type="number" class="const-score" min="0" max="100" placeholder="score"/>
@@ -145,7 +148,7 @@
       </div>
 
       <h3>Éléments du bilan</h3>
-      <div class="checkbox-list" id="checkboxes"></div>
+      <div id="checkboxes" class="checkbox-list"></div>
 
       <button id="btn-enregistrer" class="btn">ENREGISTRER LE BILAN</button>
     </div>
@@ -165,186 +168,231 @@
   <section id="sec-constant">
     <h2>Questionnaire Score de Constant</h2>
     <form id="form-constant">
-      <label>Douleur (0–15 points)</label>
+      <label>Douleur (0–15 pts)</label>
       <input type="number" id="q-douleur" min="0" max="15" value="0"/>
-
-      <label>Activités de la vie quotidienne (0–20 points)</label>
+      <label>AVQ (0–20 pts)</label>
       <input type="number" id="q-avq" min="0" max="20" value="0"/>
-
-      <label>Amplitude (0–40 points)</label>
+      <label>Amplitude (0–40 pts)</label>
       <input type="number" id="q-mobilite" min="0" max="40" value="0"/>
-
-      <label>Force musculaire (0–25 points)</label>
+      <label>Force (0–25 pts)</label>
       <input type="number" id="q-force" min="0" max="25" value="0"/>
-
-      <button type="button" id="calc-constant" class="btn">Calculer le score</button>
+      <button type="button" id="calc-constant" class="btn">Calculer</button>
     </form>
-    <h3>Score calculé : <span id="constant-result">0</span>/100</h3>
+    <h3>Résultat : <span id="constant-result">0</span>/100</h3>
   </section>
 
   <script>
-    // Splash disparait après 5s
-    document.addEventListener('DOMContentLoaded', ()=>{
-      setTimeout(()=>document.getElementById('splash').style.display='none', 5000);
+    // Faire disparaitre le splash après 5s
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => document.getElementById('splash').style.display = 'none', 5000);
     });
 
-    // données dans localStorage
-    function loadBilans(){
-      const d = localStorage.getItem('bilans');
-      return d? JSON.parse(d): {};
-    }
-    function saveBilans(o){
-      localStorage.setItem('bilans', JSON.stringify(o));
-    }
-
-    // mapping items→actes (inchangé)
-    const items = [ /*... même tableau d'objets {...} ...*/ ];
-
-    // Onglets
-    document.querySelectorAll('nav button').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
-        document.getElementById(btn.id.replace('tab','sec')).classList.add('active');
-      });
-    });
+    // Items & mapping vers actes
+    const items = [
+      { label: 'Écho : tendinopathie supra-ep', key: 'echo_supra', actes: ['ODC supra-ep'] },
+      { label: 'Écho : tendinopathie infra-ep', key: 'echo_infra', actes: ['ODC infra-ep'] },
+      { label: 'Écho : tendinopathie subscap', key: 'echo_subscap', actes: ['ODC subscap'] },
+      { label: 'Écho : tendinopathie long biceps', key: 'echo_lg_biceps', actes: ['ODC lg biceps'] },
+      { label: 'Poussées inflammatoires', key: 'pouss_infl', actes: ['Ultrasons', 'Glace à la maison'] },
+      { label: 'Posture en tilt antérieur', key: 'posture_tilt', actes: [
+          'Mouvements activo-passifs de tilt postérieur',
+          'Étirement du petit pectoral',
+          'Ponçage du petit pectoral',
+          'Renforcement du trapèze inférieur',
+          'Réintegration en Superman Row'
+        ]
+      },
+      { label: 'Gléno-humérale qui craque', key: 'gleno_craque', actes: [
+          'Exercices de co-contractions : pads',
+          'Alphabet',
+          'T sur Bosu',
+          'Cercles Haltère'
+        ]
+      },
+      { label: 'Palpation supra-ep +', key: 'palp_supra', actes: ['ODC supra-ep'] },
+      { label: 'Palpation infra-ep +', key: 'palp_infra', actes: ['ODC infra-ep'] },
+      { label: 'Palpation lg biceps +', key: 'palp_lg_biceps', actes: ['ODC lg biceps'] },
+      { label: 'Contracture trapèze sup', key: 'contr_trap_sup', actes: ['Shrugs','Pistolet Massage Trapèze Sup'] },
+      { label: 'Contracture deltoïde', key: 'contr_deltoide', actes: ['Pistolet Massage Deltoïde'] },
+      { label: 'Contracture trapèze moyen', key: 'contr_trap_moy', actes: ['Pistolet Massage Trapèze Moy','Scap Squeezie Machine'] },
+      { label: 'Contracture des rotateurs internes', key: 'contr_ri', actes: ['Balle de Massage sur Trigger Points','Pistolet Massage sur les RI'] },
+      { label: 'Test de Neer +', key: 'test_neer', actes: ['Renfo des RE d\'épaule','Décoaptations et recentrages'] },
+      { label: 'Test de Hawkins +', key: 'test_hawkins', actes: ['Renfo des RE d\'épaule','Décoaptations et recentrages'] },
+      { label: 'C-Test +', key: 'c_test', actes: ['Renfo des RE d\'épaule','Décoaptations et recentrages'] },
+      { label: 'Test de Jobe +', key: 'test_jobe', actes: ['ODC supra-ep','Contractions supra-ep rapides bloquées'] },
+      { label: 'Test de Patte +', key: 'test_patte', actes: ['ODC infra-ep','Contractions infra-ep rapides bloquées en RI sur le dos'] },
+      { label: 'Palm Up Test +', key: 'palm_up', actes: ['ODC lg biceps','Contractions lg biceps rapides bloquées en extension d\'épaule'] },
+      { label: 'Belly Press Test +', key: 'belly_press', actes: ['ODC subscap','Contractions RI d\'épaule rapides bloquées, en RE d\'épaule, sur le dos'] },
+      { label: 'Amplitude en RE limitée', key: 'amp_re', actes: ['Étirements des RI d\'épaule'] },
+      { label: 'Amplitude en RI limitée', key: 'amp_ri', actes: ['Étirements des RE d\'épaule'] },
+      { label: 'Abd douloureuse et correction du spin efficace', key: 'abd_spin', actes: ['Corrections du spin'] },
+      { label: 'Préactivation de la coiffe (infra-ep) efficace', key: 'preact_coiffe', actes: ['Renfo des RE d\'épaule','Réintegration en Superman Row'] },
+      { label: 'Accompagnement de la scapula efficace', key: 'accomp_scap', actes: ['Shrugs','Travail du dentelé antérieur','Snow Angels','Réintegration en Superman Row'] }
+    ];
 
     // Génération des checkbox
     const cbContainer = document.getElementById('checkboxes');
-    items.forEach(it=>{
+    items.forEach(it => {
       const lbl = document.createElement('label');
       lbl.innerHTML = `<input type="checkbox" data-key="${it.key}"> ${it.label}`;
       cbContainer.appendChild(lbl);
     });
 
-    // ---- BILAN: liste & formulaire ----
-    document.getElementById('btn-liste').onclick = ()=>{
-      document.getElementById('view-form').style.display='none';
-      const view = document.getElementById('view-liste');
-      view.style.display = 'block';
+    // Helpers storage
+    function loadBilans() {
+      const d = localStorage.getItem('bilans');
+      return d ? JSON.parse(d) : {};
+    }
+    function saveBilans(o) {
+      localStorage.setItem('bilans', JSON.stringify(o));
+    }
+
+    // Onglets
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(btn.id.replace('tab','sec')).classList.add('active');
+      });
+    });
+
+    // ------- BILAN -------
+    document.getElementById('btn-liste').onclick = () => {
+      document.getElementById('view-form').style.display = 'none';
+      document.getElementById('view-liste').style.display = 'block';
       const cont = document.getElementById('liste-bilans');
       cont.innerHTML = '';
       const bilans = loadBilans();
-      Object.keys(bilans).sort().forEach(name=>{
+      Object.keys(bilans).sort().forEach(name => {
         const div = document.createElement('div');
-        div.className='list-item';
-        div.textContent=name;
-        div.onclick=()=>editBilan(name);
+        div.className = 'list-item';
+        div.textContent = name;
+        div.onclick = () => editBilan(name);
         cont.appendChild(div);
       });
     };
-    document.getElementById('btn-nouveau').onclick = ()=>{
+
+    document.getElementById('btn-nouveau').onclick = () => {
       showForm();
-      document.getElementById('input-nom').value='';
+      document.getElementById('input-nom').value = '';
       clearConstantRows();
-      document.querySelectorAll('#checkboxes input').forEach(cb=>cb.checked=false);
+      document.querySelectorAll('#checkboxes input').forEach(cb => cb.checked = false);
     };
-    function showForm(){
-      document.getElementById('view-liste').style.display='none';
-      document.getElementById('view-form').style.display='block';
+
+    function showForm() {
+      document.getElementById('view-liste').style.display = 'none';
+      document.getElementById('view-form').style.display = 'block';
     }
-    function clearConstantRows(){
-      document.querySelectorAll('.const-score').forEach(i=>{ i.value=''; i.classList.remove('green-bg','red-bg'); });
-      document.querySelectorAll('.const-date').forEach(d=>d.value='');
+
+    function clearConstantRows() {
+      document.querySelectorAll('.const-score').forEach(i => {
+        i.value = ''; i.classList.remove('green-bg','red-bg');
+      });
+      document.querySelectorAll('.const-date').forEach(d => d.value = '');
     }
-    function editBilan(name){
+
+    function editBilan(name) {
       const bilans = loadBilans(), b = bilans[name];
       showForm();
       document.getElementById('input-nom').value = name;
       clearConstantRows();
-      if(b.constantEntries){
-        b.constantEntries.slice(0,3).forEach((ce,i)=>{
-          document.querySelectorAll('.const-score')[i].value = ce.score;
-          document.querySelectorAll('.const-date')[i].value = ce.date;
+      if (b.constantEntries) {
+        b.constantEntries.slice(0,3).forEach((ce,i) => {
+          const scores = document.querySelectorAll('.const-score');
+          const dates  = document.querySelectorAll('.const-date');
+          scores[i].value = ce.score;
+          dates[i].value  = ce.date;
         });
         colorLatestConstant();
       }
-      document.querySelectorAll('#checkboxes input').forEach(cb=>{
+      document.querySelectorAll('#checkboxes input').forEach(cb => {
         cb.checked = b.selections.includes(cb.getAttribute('data-key'));
       });
     }
 
-    // Enregistrer
-    document.getElementById('btn-enregistrer').onclick = ()=>{
+    document.getElementById('btn-enregistrer').onclick = () => {
       const name = document.getElementById('input-nom').value.trim();
-      if(!name){ alert('Nom patient requis'); return; }
-      // lire les constantes
-      const scores = Array.from(document.querySelectorAll('.const-score')).map((inp,i)=>({
-        score: inp.value? parseInt(inp.value): null,
-        date: document.querySelectorAll('.const-date')[i].value || null
-      })).filter(ce=>ce.score!==null && ce.date);
-      // mapping selections
+      if (!name) { alert('Nom du patient requis'); return; }
+      // Récupérer les entries constantes
+      const entries = Array.from(document.querySelectorAll('.const-row')).map((r,i) => {
+        const scoreI = r.querySelector('.const-score'),
+              dateI  = r.querySelector('.const-date');
+        return dateI.value && scoreI.value
+          ? { score: parseInt(scoreI.value), date: dateI.value }
+          : null;
+      }).filter(e => e);
+      // Récupérer les selections
       const sels = Array.from(document.querySelectorAll('#checkboxes input'))
-                        .filter(cb=>cb.checked)
-                        .map(cb=>cb.getAttribute('data-key'));
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.getAttribute('data-key'));
       const bilans = loadBilans();
-      bilans[name] = { constantEntries: scores, selections: sels };
+      bilans[name] = { constantEntries: entries, selections: sels };
       saveBilans(bilans);
       alert('Bilan enregistré.');
     };
 
-    // coloration du plus récent vs précédent
-    document.querySelectorAll('.const-score, .const-date').forEach(el=>{
+    // Coloration du dernier score
+    document.querySelectorAll('.const-score, .const-date').forEach(el => {
       el.addEventListener('change', colorLatestConstant);
     });
-    function colorLatestConstant(){
+    function colorLatestConstant() {
       const rows = Array.from(document.querySelectorAll('.const-row'));
-      // extraire entrées valides
-      const entries = rows.map(r=>{
-        const scoreI = r.querySelector('.const-score'),
-              dateI  = r.querySelector('.const-date');
-        return dateI.value && scoreI.value
-          ? { date: dateI.value, score: parseInt(scoreI.value), input: scoreI }
+      const ev = rows.map(r => {
+        const s = r.querySelector('.const-score'),
+              d = r.querySelector('.const-date');
+        return d.value && s.value
+          ? { date: new Date(d.value), score: parseInt(s.value), input: s }
           : null;
-      }).filter(e=>e).sort((a,b)=> new Date(a.date) - new Date(b.date));
-      // reset classes
-      document.querySelectorAll('.const-score').forEach(i=>i.classList.remove('green-bg','red-bg'));
-      if(entries.length >= 2){
-        const last = entries[entries.length-1],
-              prev = entries[entries.length-2];
-        if(last.score > prev.score) last.input.classList.add('green-bg');
-        else if(last.score < prev.score) last.input.classList.add('red-bg');
+      }).filter(e => e).sort((a,b) => a.date - b.date);
+      // reset
+      document.querySelectorAll('.const-score').forEach(i => i.classList.remove('green-bg','red-bg'));
+      if (ev.length >= 2) {
+        const last = ev[ev.length-1], prev = ev[ev.length-2];
+        if (last.score > prev.score) last.input.classList.add('green-bg');
+        else if (last.score < prev.score) last.input.classList.add('red-bg');
       }
     }
 
-    // ---- TRAITEMENT ----
-    function refreshTraitementList(){
+    // ------- TRAITEMENT -------
+    function refreshTraitementList() {
       const cont = document.getElementById('liste-traitement');
-      cont.innerHTML='';
+      cont.innerHTML = '';
       const bilans = loadBilans();
-      Object.keys(bilans).sort().forEach(name=>{
+      Object.keys(bilans).sort().forEach(name => {
         const div = document.createElement('div');
-        div.className='list-item';
-        div.textContent=name;
-        div.onclick=()=>showTraitement(name);
+        div.className = 'list-item';
+        div.textContent = name;
+        div.onclick = () => showTraitement(name);
         cont.appendChild(div);
       });
     }
-    document.getElementById('tab-traitement').addEventListener('click',refreshTraitementList);
-    function showTraitement(name){
+    document.getElementById('tab-traitement').addEventListener('click', refreshTraitementList);
+
+    function showTraitement(name) {
       const bilans = loadBilans(), b = bilans[name];
-      const actesSet = new Set();
-      b.selections.forEach(k=>{
-        const it = items.find(x=>x.key===k);
-        it.actes.forEach(a=>actesSet.add(a));
+      const actes = new Set();
+      b.selections.forEach(k => {
+        const it = items.find(x => x.key === k);
+        it.actes.forEach(a => actes.add(a));
       });
       const ul = document.getElementById('liste-actes');
-      ul.innerHTML='';
-      actesSet.forEach(a=>{
-        const li=document.createElement('li'); li.textContent=a;
+      ul.innerHTML = '';
+      actes.forEach(a => {
+        const li = document.createElement('li');
+        li.textContent = a;
         ul.appendChild(li);
       });
-      document.getElementById('treat-nom').textContent=name;
-      document.getElementById('view-traitement').style.display='block';
+      document.getElementById('treat-nom').textContent = name;
+      document.getElementById('view-traitement').style.display = 'block';
     }
 
-    // ---- SCORE DE CONSTANT (calcul questionnaire) ----
-    document.getElementById('calc-constant').onclick = ()=>{
-      const d = parseInt(document.getElementById('q-douleur').value) || 0;
-      const avq = parseInt(document.getElementById('q-avq').value) || 0;
-      const mob= parseInt(document.getElementById('q-mobilite').value) || 0;
-      const f = parseInt(document.getElementById('q-force').value) || 0;
+    // ------- SCORE DE CONSTANT (QUESTIONNAIRE) -------
+    document.getElementById('calc-constant').onclick = () => {
+      const d   = parseInt(document.getElementById('q-douleur').value) || 0;
+      const avq = parseInt(document.getElementById('q-avq').value)     || 0;
+      const mob = parseInt(document.getElementById('q-mobilite').value)|| 0;
+      const f   = parseInt(document.getElementById('q-force').value)   || 0;
       const total = d + avq + mob + f;
       document.getElementById('constant-result').textContent = total;
     };
