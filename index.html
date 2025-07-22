@@ -174,63 +174,109 @@
     <h2>Questionnaire Score de Constant</h2>
 
     <form id="form-constant">
+      <!-- 1. Douleur -->
       <fieldset>
         <legend>1. Douleur (0–15 pts)</legend>
-        <label for="q-pain">Douleur la plus forte :</label>
-        <input type="number" id="q-pain" min="0" max="15" value="15"/>
+        <label for="q-verbal">Échelle verbale :</label>
+        <select id="q-verbal">
+          <option value="15">Aucune douleur (15 pts)</option>
+          <option value="10">Douleur modérée (10 pts)</option>
+          <option value="5">Douleur moyenne (5 pts)</option>
+          <option value="0">Douleur intolérable (0 pt)</option>
+        </select>
+        <label for="q-algo">Échelle algométrique :</label>
+        <input type="number" id="q-algo" min="0" max="15" value="0"/>
+        <p>Score douloureux = (verbal + algométrique) ÷ 2</p>
       </fieldset>
 
+      <!-- 2. Activités de la vie quotidienne -->
       <fieldset>
         <legend>2. Activités de la vie quotidienne (20 pts)</legend>
-        <label for="q-sleep">Sommeil perturbé :</label>
+        <label for="q-sleep">Gêne dans le sommeil :</label>
         <select id="q-sleep">
-          <option value="2">Aucun (+2)</option>
-          <option value="1">Occasionnel (+1)</option>
-          <option value="0">Chaque nuit (+0)</option>
+          <option value="2">Aucune gêne (2 pts)</option>
+          <option value="1">Gêne modérée (1 pt)</option>
+          <option value="0">Douleurs insomniantes (0 pt)</option>
         </select>
-
         <label for="q-work">Activités professionnelles :</label>
         <select id="q-work">
-          <option value="4">Aucune limitation (+4)</option>
-          <option value="2">Modérée (+2)</option>
-          <option value="0">Forte (+0)</option>
+          <option value="4">Aucune gêne (4 pts)</option>
+          <option value="3">Gêne modérée (3 pts)</option>
+          <option value="2">Gêne moyenne (2 pts)</option>
+          <option value="1">Gêne importante (1 pt)</option>
+          <option value="0">Travail impossible/non repris (0 pt)</option>
         </select>
-
-        <label for="q-sport">Loisirs / sport :</label>
-        <select id="q-sport">
-          <option value="4">Aucune limitation (+4)</option>
-          <option value="2">Modérée (+2)</option>
-          <option value="0">Forte (+0)</option>
+        <label for="q-loisir">Loisirs :</label>
+        <select id="q-loisir">
+          <option value="4">Aucune gêne (4 pts)</option>
+          <option value="3">Gêne modérée (3 pts)</option>
+          <option value="2">Gêne moyenne (2 pts)</option>
+          <option value="1">Gêne importante (1 pt)</option>
+          <option value="0">Impossible (0 pt)</option>
         </select>
-
         <label for="q-position">Position bras sans douleur :</label>
         <select id="q-position">
-          <option value="2">Taille (+2)</option>
-          <option value="4">Stérnum (+4)</option>
-          <option value="6">Cou (+6)</option>
-          <option value="8">Tête (+8)</option>
-          <option value="10">Au-dessus tête (+10)</option>
+          <option value="2">Taille (2 pts)</option>
+          <option value="4">Xiphoïde (4 pts)</option>
+          <option value="6">Cou (6 pts)</option>
+          <option value="8">Tête (8 pts)</option>
+          <option value="10">Au‑dessus de la tête (10 pts)</option>
         </select>
       </fieldset>
 
+      <!-- 3. Mobilité active sans douleur -->
       <fieldset>
         <legend>3. Mobilité active sans douleur (0–40 pts)</legend>
-        <label for="q-mobilite">Score mobilité :</label>
-        <input type="number" id="q-mobilite" min="0" max="40" value="0"/>
-        <p>À mesurer par le soignant : 2 pts tous les 30° d’élévation, abduction et rotations.</p>
+        <label for="q-antepulsion">Antépulsion :</label>
+        <select id="q-antepulsion">
+          <option value="0">0°‑30° (0 pt)</option>
+          <option value="2">31°‑60° (2 pts)</option>
+          <option value="4">61°‑90° (4 pts)</option>
+          <option value="6">91°‑120° (6 pts)</option>
+          <option value="8">121°‑150° (8 pts)</option>
+          <option value="10">&gt;150° (10 pts)</option>
+        </select>
+        <label for="q-abduction">Abduction :</label>
+        <select id="q-abduction">
+          <option value="0">0°‑30° (0 pt)</option>
+          <option value="2">31°‑60° (2 pts)</option>
+          <option value="4">61°‑90° (4 pts)</option>
+          <option value="6">91°‑120° (6 pts)</option>
+          <option value="8">121°‑150° (8 pts)</option>
+          <option value="10">&gt;150° (10 pts)</option>
+        </select>
+        <label for="q-rot-lat">Rotation latérale :</label>
+        <select id="q-rot-lat">
+          <option value="2">Main derrière tête, coude avant (2 pts)</option>
+          <option value="4">Main derrière tête, coude arrière (4 pts)</option>
+          <option value="6">Main sur tête, coude avant (6 pts)</option>
+          <option value="8">Main sur tête, coude arrière (8 pts)</option>
+          <option value="10">Élévation complète (10 pts)</option>
+        </select>
+        <label for="q-rot-med">Rotation médiale :</label>
+        <select id="q-rot-med">
+          <option value="2">Dos main niveau fesse (2 pts)</option>
+          <option value="4">Niveau sacrum (4 pts)</option>
+          <option value="6">Niveau L3 (6 pts)</option>
+          <option value="8">Niveau T12 (8 pts)</option>
+          <option value="10">Niveau T7‑T8 (10 pts)</option>
+        </select>
       </fieldset>
 
+      <!-- 4. Force musculaire -->
       <fieldset>
         <legend>4. Force musculaire (0–25 pts)</legend>
-        <label for="q-force">Score force :</label>
-        <input type="number" id="q-force" min="0" max="25" value="0"/>
-        <p>À mesurer par le soignant : poids en kg × 2 (max 25 pts).</p>
+        <label for="q-poids">Poids mesuré (kg) :</label>
+        <input type="number" id="q-poids" min="0" step="0.1" value="0"/>
+        <p>Score force = Poids (kg) × 2, maximum 25 pts</p>
       </fieldset>
 
       <button type="button" id="calc-constant" class="btn">Calculer le score</button>
     </form>
 
-    <h3>Score total : <span id="constant-result">0</span>/100</h3>
+    <h3>Score global : <span id="constant-result">0</span>/100</h3>
+    <img src="norme.jpg" alt="Tableau des valeurs normales du score de Constant selon âge et sexe" style="max-width:100%; margin-top:1rem;"/>
+
   </section>
 
   <script>
@@ -434,16 +480,28 @@
       document.getElementById('view-traitement').style.display='block';
     }
 
-    // questionnaire calc
+    // calcul Score de Constant
     document.getElementById('calc-constant').onclick = () => {
-      const pain     = +document.getElementById('q-pain').value    || 0;
-      const sleep    = +document.getElementById('q-sleep').value   || 0;
-      const work     = +document.getElementById('q-work').value    || 0;
-      const sport    = +document.getElementById('q-sport').value   || 0;
-      const pos      = +document.getElementById('q-position').value|| 0;
-      const mobilite = +document.getElementById('q-mobilite').value|| 0;
-      const force    = +document.getElementById('q-force').value   || 0;
-      const total = pain + sleep + work + sport + pos + mobilite + force;
+      const verbal    = +document.getElementById('q-verbal').value    || 0;
+      const algo      = +document.getElementById('q-algo').value      || 0;
+      const painScore = (verbal + algo) / 2;
+
+      const sleep     = +document.getElementById('q-sleep').value     || 0;
+      const work      = +document.getElementById('q-work').value      || 0;
+      const loisir    = +document.getElementById('q-loisir').value    || 0;
+      const pos       = +document.getElementById('q-position').value  || 0;
+      const domain2   = sleep + work + loisir + pos;
+
+      const antep     = +document.getElementById('q-antepulsion').value || 0;
+      const abd       = +document.getElementById('q-abduction').value   || 0;
+      const rotLat    = +document.getElementById('q-rot-lat').value     || 0;
+      const rotMed    = +document.getElementById('q-rot-med').value     || 0;
+      const domain3   = antep + abd + rotLat + rotMed;
+
+      const poids     = +document.getElementById('q-poids').value       || 0;
+      const force     = Math.min(poids * 2, 25);
+
+      const total     = Math.round(painScore + domain2 + domain3 + force);
       document.getElementById('constant-result').textContent = total;
     };
   </script>
