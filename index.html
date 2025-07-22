@@ -17,94 +17,93 @@
   <style>
     /* Splash screen */
     #splash {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: #fff;
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999;
+      position: fixed; top:0; left:0;
+      width:100%; height:100%;
+      background:#fff;
+      display:flex; align-items:center; justify-content:center;
+      z-index:9999;
     }
     #splash img {
-      max-width: 100%; max-height: 100%; object-fit: contain;
+      max-width:100%; max-height:100%; object-fit:contain;
     }
 
-    /* Styles généraux */
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background: #007ACC; color: #fff; padding: 1rem; text-align: center; }
+    body { font-family: Arial, sans-serif; margin:0; padding:0; }
+    header { background:#007ACC; color:#fff; padding:1rem; text-align:center; }
     .greek-title {
-      font-family: 'Cinzel', serif;
-      font-size: 2rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-family:'Cinzel', serif;
+      font-size:2rem; letter-spacing:0.1em;
+      text-transform:uppercase;
     }
-    nav { display: flex; background: #005A9E; }
+    nav { display:flex; background:#005A9E; }
     nav button {
-      flex: 1; padding: 0.75rem;
-      background: none; border: none;
-      color: #fff; font-size: 1rem;
+      flex:1; padding:0.75rem;
+      background:none; border:none;
+      color:#fff; font-size:1rem;
     }
-    nav button.active { background: #004476; }
+    nav button.active { background:#004476; }
 
-    section { display: none; padding: 1rem; }
-    section.active { display: block; }
+    section { display:none; padding:1rem; }
+    section.active { display:block; }
 
-    .list-item {
-      padding: 0.5rem 0; border-bottom: 1px solid #ccc;
-      cursor: pointer;
-    }
     .btn {
-      display: block; margin: 1rem 0;
-      padding: 0.75rem; background: #007ACC;
-      color: #fff; text-align: center;
-      border: none; border-radius: 4px;
+      display:block; margin:1rem 0;
+      padding:0.75rem; background:#007ACC;
+      color:#fff; text-align:center;
+      border:none; border-radius:4px;
     }
-
-    .checkbox-list {
-      max-height: 300px; overflow-y: auto;
-      border: 1px solid #ccc; padding: 0.5rem;
-      margin-top: 1rem;
-    }
-    .checkbox-list label {
-      display: block; margin-bottom: 0.5rem;
-    }
-
-    input[type="text"], input[type="date"],
-    input[type="number"], select {
-      width: 100%; padding: 0.5rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc; border-radius: 4px;
-      box-sizing: border-box;
+    .list-item {
+      padding:0.5rem 0; border-bottom:1px solid #ccc;
+      cursor:pointer;
     }
 
     .const-row {
-      display: flex; gap: 0.5rem;
-      align-items: center; margin-bottom: 0.75rem;
+      display:flex; gap:0.5rem;
+      align-items:center; margin-bottom:0.75rem;
     }
-    .const-row label { width: 3rem; }
-    .const-row input { flex: 1; }
+    .const-row label { width:3rem; }
+    .const-row input { flex:1; }
 
-    .green-bg { background-color: #d4edda; }
-    .red-bg   { background-color: #f8d7da; }
+    .checkbox-list {
+      max-height:300px; overflow-y:auto;
+      border:1px solid #ccc; padding:0.5rem;
+      margin-top:1rem;
+    }
+    .checkbox-list label {
+      display:block; margin-bottom:0.5rem;
+    }
+
+    input[type="text"], input[type="date"], input[type="number"], select {
+      width:100%; padding:0.5rem;
+      margin-bottom:1rem;
+      border:1px solid #ccc; border-radius:4px;
+      box-sizing:border-box;
+    }
+
+    fieldset {
+      margin-bottom:1rem;
+      border:1px solid #ccc; padding:0.5rem;
+    }
+    legend {
+      font-weight:bold; margin-bottom:0.5rem;
+    }
+
+    ul { padding-left:1.2rem; }
   </style>
 </head>
 <body>
 
-  <!-- Enregistrement du service‑worker -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('SW registered:', reg))
-          .catch(err => console.error('SW registration failed:', err));
+        navigator.serviceWorker.register('sw.js').catch(console.error);
       });
     }
   </script>
 
-  <!-- Splash screen -->
   <div id="splash">
     <img src="lancement.png" alt="Statue guerrier grec avec douleur à l'épaule" />
   </div>
 
-  <!-- Contenu principal -->
   <header>
     <h1 class="greek-title">SHOULDER ODYSSEY</h1>
   </header>
@@ -128,26 +127,12 @@
     <div id="view-form" style="display:none;">
       <h2>BILAN pour <input type="text" id="input-nom" placeholder="Nom du patient"/></h2>
 
-      <h3>Scores de Constant</h3>
       <div id="constant-entries">
-        <div class="const-row">
-          <label>#1</label>
-          <input type="number" class="const-score" min="0" max="100" placeholder="score"/>
-          <input type="date"   class="const-date" />
-        </div>
-        <div class="const-row">
-          <label>#2</label>
-          <input type="number" class="const-score" min="0" max="100" placeholder="score"/>
-          <input type="date"   class="const-date" />
-        </div>
-        <div class="const-row">
-          <label>#3</label>
-          <input type="number" class="const-score" min="0" max="100" placeholder="score"/>
-          <input type="date"   class="const-date" />
-        </div>
+        <div class="const-row"><label>#1</label><input type="number" class="const-score" min="0" max="100"/><input type="date" class="const-date"/></div>
+        <div class="const-row"><label>#2</label><input type="number" class="const-score" min="0" max="100"/><input type="date" class="const-date"/></div>
+        <div class="const-row"><label>#3</label><input type="number" class="const-score" min="0" max="100"/><input type="date" class="const-date"/></div>
       </div>
 
-      <h3>Éléments du bilan</h3>
       <div id="checkboxes" class="checkbox-list"></div>
 
       <button id="btn-enregistrer" class="btn">ENREGISTRER LE BILAN</button>
@@ -164,237 +149,226 @@
     </div>
   </section>
 
-  <!-- SECTION SCORE DE CONSTANT (QUESTIONNAIRE) -->
+  <!-- SECTION SCORE DE CONSTANT -->
   <section id="sec-constant">
     <h2>Questionnaire Score de Constant</h2>
+
     <form id="form-constant">
-      <label>Douleur (0–15 pts)</label>
-      <input type="number" id="q-douleur" min="0" max="15" value="0"/>
-      <label>AVQ (0–20 pts)</label>
-      <input type="number" id="q-avq" min="0" max="20" value="0"/>
-      <label>Amplitude (0–40 pts)</label>
-      <input type="number" id="q-mobilite" min="0" max="40" value="0"/>
-      <label>Force (0–25 pts)</label>
-      <input type="number" id="q-force" min="0" max="25" value="0"/>
-      <button type="button" id="calc-constant" class="btn">Calculer</button>
+      <fieldset>
+        <legend>1. Douleur (0–15 pts)</legend>
+        <label for="q-pain">Douleur la plus forte :</label>
+        <input type="number" id="q-pain" min="0" max="15" value="15"/>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Activités de la vie quotidienne (20 pts)</legend>
+        <label for="q-sleep">Sommeil perturbé :</label>
+        <select id="q-sleep">
+          <option value="2">Aucun (+2)</option>
+          <option value="1">Occasionnel (+1)</option>
+          <option value="0">Chaque nuit (+0)</option>
+        </select>
+
+        <label for="q-work">Activités professionnelles :</label>
+        <select id="q-work">
+          <option value="4">Aucune limitation (+4)</option>
+          <option value="2">Modérée (+2)</option>
+          <option value="0">Forte (+0)</option>
+        </select>
+
+        <label for="q-sport">Loisirs / sport :</label>
+        <select id="q-sport">
+          <option value="4">Aucune limitation (+4)</option>
+          <option value="2">Modérée (+2)</option>
+          <option value="0">Forte (+0)</option>
+        </select>
+
+        <label for="q-position">Position bras sans douleur :</label>
+        <select id="q-position">
+          <option value="2">Taille (+2)</option>
+          <option value="4">Stérnum (+4)</option>
+          <option value="6">Cou (+6)</option>
+          <option value="8">Tête (+8)</option>
+          <option value="10">Au-dessus tête (+10)</option>
+        </select>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Mobilité active sans douleur (0–40 pts)</legend>
+        <p>À mesurer par le soignant : 2 pts tous les 30° d’élévation, abduction et rotations.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Force musculaire (0–25 pts)</legend>
+        <p>À mesurer par le soignant : poids en kg × 2.</p>
+      </fieldset>
+
+      <button type="button" id="calc-constant" class="btn">Calculer le score</button>
     </form>
-    <h3>Résultat : <span id="constant-result">0</span>/100</h3>
+
+    <h3>Score total : <span id="constant-result">0</span>/100</h3>
   </section>
 
   <script>
-    // Faire disparaitre le splash après 5s
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => document.getElementById('splash').style.display = 'none', 5000);
+    // Splash disappear
+    document.addEventListener('DOMContentLoaded', ()=>{
+      setTimeout(()=>document.getElementById('splash').style.display='none',5000);
     });
 
-    // Items & mapping vers actes
+    // Items mapping
     const items = [
-      { label: 'Écho : tendinopathie supra-ep', key: 'echo_supra', actes: ['ODC supra-ep'] },
-      { label: 'Écho : tendinopathie infra-ep', key: 'echo_infra', actes: ['ODC infra-ep'] },
-      { label: 'Écho : tendinopathie subscap', key: 'echo_subscap', actes: ['ODC subscap'] },
-      { label: 'Écho : tendinopathie long biceps', key: 'echo_lg_biceps', actes: ['ODC lg biceps'] },
-      { label: 'Poussées inflammatoires', key: 'pouss_infl', actes: ['Ultrasons', 'Glace à la maison'] },
-      { label: 'Posture en tilt antérieur', key: 'posture_tilt', actes: [
-          'Mouvements activo-passifs de tilt postérieur',
-          'Étirement du petit pectoral',
-          'Ponçage du petit pectoral',
-          'Renforcement du trapèze inférieur',
-          'Réintegration en Superman Row'
-        ]
-      },
-      { label: 'Gléno-humérale qui craque', key: 'gleno_craque', actes: [
-          'Exercices de co-contractions : pads',
-          'Alphabet',
-          'T sur Bosu',
-          'Cercles Haltère'
-        ]
-      },
-      { label: 'Palpation supra-ep +', key: 'palp_supra', actes: ['ODC supra-ep'] },
-      { label: 'Palpation infra-ep +', key: 'palp_infra', actes: ['ODC infra-ep'] },
-      { label: 'Palpation lg biceps +', key: 'palp_lg_biceps', actes: ['ODC lg biceps'] },
-      { label: 'Contracture trapèze sup', key: 'contr_trap_sup', actes: ['Shrugs','Pistolet Massage Trapèze Sup'] },
-      { label: 'Contracture deltoïde', key: 'contr_deltoide', actes: ['Pistolet Massage Deltoïde'] },
-      { label: 'Contracture trapèze moyen', key: 'contr_trap_moy', actes: ['Pistolet Massage Trapèze Moy','Scap Squeezie Machine'] },
-      { label: 'Contracture des rotateurs internes', key: 'contr_ri', actes: ['Balle de Massage sur Trigger Points','Pistolet Massage sur les RI'] },
-      { label: 'Test de Neer +', key: 'test_neer', actes: ['Renfo des RE d\'épaule','Décoaptations et recentrages'] },
-      { label: 'Test de Hawkins +', key: 'test_hawkins', actes: ['Renfo des RE d\'épaule','Décoaptations et recentrages'] },
-      { label: 'C-Test +', key: 'c_test', actes: ['Renfo des RE d\'épaule','Décoaptations et recentrages'] },
-      { label: 'Test de Jobe +', key: 'test_jobe', actes: ['ODC supra-ep','Contractions supra-ep rapides bloquées'] },
-      { label: 'Test de Patte +', key: 'test_patte', actes: ['ODC infra-ep','Contractions infra-ep rapides bloquées en RI sur le dos'] },
-      { label: 'Palm Up Test +', key: 'palm_up', actes: ['ODC lg biceps','Contractions lg biceps rapides bloquées en extension d\'épaule'] },
-      { label: 'Belly Press Test +', key: 'belly_press', actes: ['ODC subscap','Contractions RI d\'épaule rapides bloquées, en RE d\'épaule, sur le dos'] },
-      { label: 'Amplitude en RE limitée', key: 'amp_re', actes: ['Étirements des RI d\'épaule'] },
-      { label: 'Amplitude en RI limitée', key: 'amp_ri', actes: ['Étirements des RE d\'épaule'] },
-      { label: 'Abd douloureuse et correction du spin efficace', key: 'abd_spin', actes: ['Corrections du spin'] },
-      { label: 'Préactivation de la coiffe (infra-ep) efficace', key: 'preact_coiffe', actes: ['Renfo des RE d\'épaule','Réintegration en Superman Row'] },
-      { label: 'Accompagnement de la scapula efficace', key: 'accomp_scap', actes: ['Shrugs','Travail du dentelé antérieur','Snow Angels','Réintegration en Superman Row'] }
+      { label: 'Écho : tendinopathie supra-ep', key: 'echo_supra', actes:['ODC supra-ep'] },
+      { label: 'Écho : tendinopathie infra-ep', key: 'echo_infra', actes:['ODC infra-ep'] },
+      { label: 'Écho : tendinopathie subscap', key: 'echo_subscap', actes:['ODC subscap'] },
+      { label: 'Écho : tendinopathie long biceps', key: 'echo_lg_biceps', actes:['ODC lg biceps'] },
+      { label: 'Poussées inflammatoires', key: 'pouss_infl', actes:['Ultrasons','Glace maison'] },
+      { label: 'Posture tilt antérieur', key: 'posture_tilt', actes:['Mouvements tilt postérieur','Étirement pec','Ponçage pec','Renfo trap inférieur','Superman Row'] },
+      { label: 'Gléno-humérale qui craque', key: 'gleno_craque', actes:['Pads','Alphabet','T Bosu','Cercles haltère'] },
+      { label: 'Palpation supra-ep +', key:'palp_supra', actes:['ODC supra-ep'] },
+      { label: 'Palpation infra-ep +', key:'palp_infra', actes:['ODC infra-ep'] },
+      { label: 'Palpation lg biceps +', key:'palp_lg_biceps', actes:['ODC lg biceps'] },
+      { label: 'Contracture trapèze sup', key:'contr_trap_sup', actes:['Shrugs','Massage trap sup'] },
+      { label: 'Contracture deltoïde', key:'contr_deltoide', actes:['Massage deltoïde'] },
+      { label: 'Contracture trapèze moyen', key:'contr_trap_moy', actes:['Massage trap moyen','Scap Squeezie'] },
+      { label: 'Contracture rotateurs internes', key:'contr_ri', actes:['Balle massage','Pistolet RI'] },
+      { label: 'Test de Neer +', key:'test_neer', actes:['Renfo RE','Décoaptation'] },
+      { label: 'Test de Hawkins +', key:'test_hawkins', actes:['Renfo RE','Décoaptation'] },
+      { label: 'C-Test +', key:'c_test', actes:['Renfo RE','Décoaptation'] },
+      { label: 'Test de Jobe +', key:'test_jobe', actes:['ODC supra-ep','Contractions rapides'] },
+      { label: 'Test de Patte +', key:'test_patte', actes:['ODC infra-ep','Contractions dos'] },
+      { label: 'Palm Up Test +', key:'palm_up', actes:['ODC lg biceps','Contractions ext'] },
+      { label: 'Belly Press Test +', key:'belly_press', actes:['ODC subscap','Contractions RE dos'] },
+      { label: 'Amplitude RE limitée', key:'amp_re', actes:['Étirements RI'] },
+      { label: 'Amplitude RI limitée', key:'amp_ri', actes:['Étirements RE'] },
+      { label: 'Abd douloureuse & spin', key:'abd_spin', actes:['Corrections spin'] },
+      { label:'Préactivation coiffe', key:'preact_coiffe', actes:['Renfo RE','Superman Row'] },
+      { label:'Accomp scapula', key:'accomp_scap', actes:['Shrugs','Dent antérieur','Snow Angels','Superman Row'] }
     ];
 
-    // Génération des checkbox
+    // render checkboxes
     const cbContainer = document.getElementById('checkboxes');
-    items.forEach(it => {
+    items.forEach(it=>{
       const lbl = document.createElement('label');
       lbl.innerHTML = `<input type="checkbox" data-key="${it.key}"> ${it.label}`;
       cbContainer.appendChild(lbl);
     });
 
-    // Helpers storage
-    function loadBilans() {
+    // storage helpers
+    function loadBilans(){
       const d = localStorage.getItem('bilans');
-      return d ? JSON.parse(d) : {};
+      return d?JSON.parse(d):{};
     }
-    function saveBilans(o) {
-      localStorage.setItem('bilans', JSON.stringify(o));
+    function saveBilans(o){
+      localStorage.setItem('bilans',JSON.stringify(o));
     }
 
-    // Onglets
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    // tabs
+    document.querySelectorAll('nav button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
-        document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
         document.getElementById(btn.id.replace('tab','sec')).classList.add('active');
       });
     });
 
-    // ------- BILAN -------
-    document.getElementById('btn-liste').onclick = () => {
-      document.getElementById('view-form').style.display = 'none';
-      document.getElementById('view-liste').style.display = 'block';
-      const cont = document.getElementById('liste-bilans');
-      cont.innerHTML = '';
-      const bilans = loadBilans();
-      Object.keys(bilans).sort().forEach(name => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.textContent = name;
-        div.onclick = () => editBilan(name);
-        cont.appendChild(div);
+    // Bilan list
+    document.getElementById('btn-liste').onclick=()=>{
+      document.getElementById('view-form').style.display='none';
+      document.getElementById('view-liste').style.display='block';
+      const cont=document.getElementById('liste-bilans');
+      cont.innerHTML='';
+      const bilans=loadBilans();
+      Object.keys(bilans).sort().forEach(name=>{
+        const d=document.createElement('div');
+        d.className='list-item'; d.textContent=name;
+        d.onclick=()=>editBilan(name);
+        cont.appendChild(d);
       });
     };
-
-    document.getElementById('btn-nouveau').onclick = () => {
-      showForm();
-      document.getElementById('input-nom').value = '';
-      clearConstantRows();
-      document.querySelectorAll('#checkboxes input').forEach(cb => cb.checked = false);
+    // Bilan nouveau
+    document.getElementById('btn-nouveau').onclick=()=>{
+      document.getElementById('view-liste').style.display='none';
+      document.getElementById('view-form').style.display='block';
+      document.getElementById('input-nom').value='';
+      document.querySelectorAll('.const-score').forEach(i=>i.value='');
+      document.querySelectorAll('.const-date').forEach(d=>d.value='');
+      document.querySelectorAll('#checkboxes input').forEach(cb=>cb.checked=false);
     };
-
-    function showForm() {
-      document.getElementById('view-liste').style.display = 'none';
-      document.getElementById('view-form').style.display = 'block';
-    }
-
-    function clearConstantRows() {
-      document.querySelectorAll('.const-score').forEach(i => {
-        i.value = ''; i.classList.remove('green-bg','red-bg');
-      });
-      document.querySelectorAll('.const-date').forEach(d => d.value = '');
-    }
-
-    function editBilan(name) {
-      const bilans = loadBilans(), b = bilans[name];
-      showForm();
-      document.getElementById('input-nom').value = name;
-      clearConstantRows();
-      if (b.constantEntries) {
-        b.constantEntries.slice(0,3).forEach((ce,i) => {
-          const scores = document.querySelectorAll('.const-score');
-          const dates  = document.querySelectorAll('.const-date');
-          scores[i].value = ce.score;
-          dates[i].value  = ce.date;
+    // edit
+    function editBilan(name){
+      const bilans=loadBilans(), b=bilans[name];
+      document.getElementById('view-liste').style.display='none';
+      document.getElementById('view-form').style.display='block';
+      document.getElementById('input-nom').value=name;
+      if(b.constantEntries){
+        b.constantEntries.forEach((ce,i)=>{
+          const sc=document.querySelectorAll('.const-score'),
+                da=document.querySelectorAll('.const-date');
+          if(sc[i]) sc[i].value=ce.score;
+          if(da[i]) da[i].value=ce.date;
         });
-        colorLatestConstant();
       }
-      document.querySelectorAll('#checkboxes input').forEach(cb => {
-        cb.checked = b.selections.includes(cb.getAttribute('data-key'));
+      document.querySelectorAll('#checkboxes input').forEach(cb=>{
+        cb.checked=b.selections.includes(cb.getAttribute('data-key'));
       });
     }
-
-    document.getElementById('btn-enregistrer').onclick = () => {
-      const name = document.getElementById('input-nom').value.trim();
-      if (!name) { alert('Nom du patient requis'); return; }
-      // Récupérer les entries constantes
-      const entries = Array.from(document.querySelectorAll('.const-row')).map((r,i) => {
-        const scoreI = r.querySelector('.const-score'),
-              dateI  = r.querySelector('.const-date');
-        return dateI.value && scoreI.value
-          ? { score: parseInt(scoreI.value), date: dateI.value }
-          : null;
-      }).filter(e => e);
-      // Récupérer les selections
-      const sels = Array.from(document.querySelectorAll('#checkboxes input'))
-                    .filter(cb => cb.checked)
-                    .map(cb => cb.getAttribute('data-key'));
-      const bilans = loadBilans();
-      bilans[name] = { constantEntries: entries, selections: sels };
+    // save
+    document.getElementById('btn-enregistrer').onclick=()=>{
+      const name=document.getElementById('input-nom').value.trim();
+      if(!name){alert('Nom requis');return;}
+      const entries=Array.from(document.querySelectorAll('.const-row')).map(r=>{
+        const s=r.querySelector('.const-score'), d=r.querySelector('.const-date');
+        return (s.value&&d.value)?{score:parseInt(s.value),date:d.value}:null;
+      }).filter(e=>e);
+      const sels=Array.from(document.querySelectorAll('#checkboxes input'))
+                    .filter(cb=>cb.checked)
+                    .map(cb=>cb.getAttribute('data-key'));
+      const bilans=loadBilans();
+      bilans[name]={constantEntries:entries,selections:sels};
       saveBilans(bilans);
-      alert('Bilan enregistré.');
+      alert('Enregistré');
     };
 
-    // Coloration du dernier score
-    document.querySelectorAll('.const-score, .const-date').forEach(el => {
-      el.addEventListener('change', colorLatestConstant);
-    });
-    function colorLatestConstant() {
-      const rows = Array.from(document.querySelectorAll('.const-row'));
-      const ev = rows.map(r => {
-        const s = r.querySelector('.const-score'),
-              d = r.querySelector('.const-date');
-        return d.value && s.value
-          ? { date: new Date(d.value), score: parseInt(s.value), input: s }
-          : null;
-      }).filter(e => e).sort((a,b) => a.date - b.date);
-      // reset
-      document.querySelectorAll('.const-score').forEach(i => i.classList.remove('green-bg','red-bg'));
-      if (ev.length >= 2) {
-        const last = ev[ev.length-1], prev = ev[ev.length-2];
-        if (last.score > prev.score) last.input.classList.add('green-bg');
-        else if (last.score < prev.score) last.input.classList.add('red-bg');
-      }
-    }
-
-    // ------- TRAITEMENT -------
-    function refreshTraitementList() {
-      const cont = document.getElementById('liste-traitement');
-      cont.innerHTML = '';
-      const bilans = loadBilans();
-      Object.keys(bilans).sort().forEach(name => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.textContent = name;
-        div.onclick = () => showTraitement(name);
-        cont.appendChild(div);
+    // traitement
+    function refreshTraitementList(){
+      const cont=document.getElementById('liste-traitement');
+      cont.innerHTML='';
+      const bilans=loadBilans();
+      Object.keys(bilans).sort().forEach(name=>{
+        const d=document.createElement('div');
+        d.className='list-item'; d.textContent=name;
+        d.onclick=()=>showTraitement(name);
+        cont.appendChild(d);
       });
     }
-    document.getElementById('tab-traitement').addEventListener('click', refreshTraitementList);
-
-    function showTraitement(name) {
-      const bilans = loadBilans(), b = bilans[name];
-      const actes = new Set();
-      b.selections.forEach(k => {
-        const it = items.find(x => x.key === k);
-        it.actes.forEach(a => actes.add(a));
+    document.getElementById('tab-traitement').onclick=refreshTraitementList;
+    function showTraitement(name){
+      const bilans=loadBilans(), b=bilans[name];
+      const actes=new Set();
+      b.selections.forEach(k=>{
+        const it=items.find(x=>x.key===k);
+        it.actes.forEach(a=>actes.add(a));
       });
-      const ul = document.getElementById('liste-actes');
-      ul.innerHTML = '';
-      actes.forEach(a => {
-        const li = document.createElement('li');
-        li.textContent = a;
+      const ul=document.getElementById('liste-actes');
+      ul.innerHTML='';
+      actes.forEach(a=>{
+        const li=document.createElement('li'); li.textContent=a;
         ul.appendChild(li);
       });
-      document.getElementById('treat-nom').textContent = name;
-      document.getElementById('view-traitement').style.display = 'block';
+      document.getElementById('treat-nom').textContent=name;
+      document.getElementById('view-traitement').style.display='block';
     }
 
-    // ------- SCORE DE CONSTANT (QUESTIONNAIRE) -------
-    document.getElementById('calc-constant').onclick = () => {
-      const d   = parseInt(document.getElementById('q-douleur').value) || 0;
-      const avq = parseInt(document.getElementById('q-avq').value)     || 0;
-      const mob = parseInt(document.getElementById('q-mobilite').value)|| 0;
-      const f   = parseInt(document.getElementById('q-force').value)   || 0;
-      const total = d + avq + mob + f;
-      document.getElementById('constant-result').textContent = total;
+    // questionnaire calc
+    document.getElementById('calc-constant').onclick=()=>{
+      const pain=+document.getElementById('q-pain').value||0;
+      const sleep=+document.getElementById('q-sleep').value||0;
+      const work=+document.getElementById('q-work').value||0;
+      const sport=+document.getElementById('q-sport').value||0;
+      const pos=+document.getElementById('q-position').value||0;
+      const total=pain+sleep+work+sport+pos;
+      document.getElementById('constant-result').textContent=total;
     };
   </script>
 </body>
