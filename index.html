@@ -486,6 +486,24 @@
       document.getElementById('view-traitement').style.display='block';
     }
 
+// ← Bloc de mise à jour live du Score Douleur
+const verbalSelect  = document.getElementById('q-verbal');
+const algoSlider    = document.getElementById('q-algo');
+const painScoreSpan = document.getElementById('pain-score');
+
+function updatePainScore(){
+  const verbalVal = Number(verbalSelect.value);
+  const algoScore = 15 - Number(algoSlider.value);
+  const painScore = Math.round((verbalVal + algoScore) / 2);
+  painScoreSpan.textContent = painScore;
+}
+
+// initialisation + branchement des événements
+updatePainScore();
+algoSlider.addEventListener('input',  updatePainScore);
+verbalSelect.addEventListener('change', updatePainScore);
+// ───────────────────────────────────────
+    
     // calcul Score de Constant
     document.getElementById('calc-constant').onclick = () => {
       const verbal    = +document.getElementById('q-verbal').value    || 0;
