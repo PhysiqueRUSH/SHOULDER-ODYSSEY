@@ -489,7 +489,8 @@
     // calcul Score de Constant
     document.getElementById('calc-constant').onclick = () => {
       const verbal    = +document.getElementById('q-verbal').value    || 0;
-      const algoScore = +document.getElementById('q-algo-value').textContent || 0;
+      const sliderVal = +document.getElementById('q-algo').value      || 0;
+      const algoScore = 15 - sliderVal;
       const painScore = (verbal + algoScore) / 2;
 
       const sleep     = +document.getElementById('q-sleep').value     || 0;
