@@ -184,10 +184,16 @@
           <option value="5">Douleur moyenne (5 pts)</option>
           <option value="0">Douleur intolérable (0 pt)</option>
         </select>
-        <label for="q-algo">Échelle algométrique :</label>
-        <input type="number" id="q-algo" min="0" max="15" value="0"/>
-        <p>Score douloureux = (verbal + algométrique) ÷ 2</p>
-      </fieldset>
+        
+        <div class="slider-group">
+          <label>Échelle algométrique :</label>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span>Absence de douleur</span>
+            <input type="range" id="q-algo" min="0" max="15" value="0">
+            <span>Douleur sévère</span>
+          </div>
+          <p>Score algométrique : <span id="q-algo-value">15</span></p>
+        </div>
 
       <!-- 2. Activités de la vie quotidienne -->
       <fieldset>
